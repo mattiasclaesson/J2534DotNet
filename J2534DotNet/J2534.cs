@@ -336,7 +336,7 @@ namespace J2534DotNet
             return (J2534Err)m_wrapper.Ioctl(channelId, (int)Ioctl.DELETE_FROM_FUNCT_MSG_LOOKUP_TABLE, input, output);
         }
 
-        private UnsafePassThruMsg ConvertPassThruMsg(PassThruMsg msg)
+        public static UnsafePassThruMsg ConvertPassThruMsg(PassThruMsg msg)
         {
             UnsafePassThruMsg uMsg = new UnsafePassThruMsg();
 
@@ -357,7 +357,7 @@ namespace J2534DotNet
             return uMsg;
         }
 
-        private static PassThruMsg ConvertPassThruMsg(UnsafePassThruMsg uMsg)
+        public static PassThruMsg ConvertPassThruMsg(UnsafePassThruMsg uMsg)
         {
             PassThruMsg msg = new PassThruMsg();
 
