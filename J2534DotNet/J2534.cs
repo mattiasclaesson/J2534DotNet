@@ -336,6 +336,11 @@ namespace J2534DotNet
             return (J2534Err)m_wrapper.Ioctl(channelId, (int)Ioctl.DELETE_FROM_FUNCT_MSG_LOOKUP_TABLE, input, output);
         }
 
+        public J2534Err RawIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output)
+        {
+            return (J2534Err) m_wrapper.Ioctl(channelId, ioctlID, input, output);
+        }
+
         public static UnsafePassThruMsg ConvertPassThruMsg(PassThruMsg msg)
         {
             UnsafePassThruMsg uMsg = new UnsafePassThruMsg();
