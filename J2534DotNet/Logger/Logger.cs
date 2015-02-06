@@ -7,7 +7,7 @@ namespace J2534DotNet.Logger
 {
     public static class Logger
     {
-        [DllExport("PassThruOpen", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruOpen")]
         public static J2534Err PassThruOpen(int nada, ref int deviceId)
         {
             Writer.Write("PassThruOpen start");
@@ -18,7 +18,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruClose", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruClose")]
         public static J2534Err PassThruClose(int deviceId)
         {
             Writer.Write("PassThruClose start");
@@ -29,7 +29,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruConnect", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruConnect")]
         public static J2534Err PassThruConnect(int deviceId, ProtocolID protocolId, ConnectFlag flags, BaudRate baudRate, ref int channelId)
         {
             Writer.Write("PassThruConnect start");
@@ -40,7 +40,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruDisconnect", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruDisconnect")]
         public static J2534Err PassThruDisconnect(int channelId)
         {
             Writer.Write("PassThruDisconnect start");
@@ -51,7 +51,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruReadMsgs", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruReadMsgs")]
         public static J2534Err PassThruReadMsgs(int channelId, ref List<PassThruMsg> msgs, ref int numMsgs, int timeout)
         {
             Writer.Write("PassThruReadMsgs start");
@@ -62,7 +62,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruWriteMsgs", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruWriteMsgs")]
         public static J2534Err PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout)
         {
             Writer.Write("PassThruWriteMsgs start");
@@ -75,7 +75,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruStartPeriodicMsg", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruStartPeriodicMsg")]
         public static J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval)
         {
             Writer.Write("PassThruStartPeriodicMsg start");
@@ -88,7 +88,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruStopPeriodicMsg", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruStopPeriodicMsg")]
         public static J2534Err PassThruStopPeriodicMsg(int channelId, int msgId)
         {
             Writer.Write("PassThruStopPeriodicMsg start");
@@ -99,7 +99,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruStartMsgFilter", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruStartMsgFilter")]
         public static J2534Err PassThruStartMsgFilter(int channelid, int filterType, ref UnsafePassThruMsg maskMsg,
             ref UnsafePassThruMsg patternMsg, ref UnsafePassThruMsg flowControlMsg, ref int filterId)
         {
@@ -120,14 +120,14 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruStartPassBlockMsgFilter", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruStartPassBlockMsgFilter")]
         public static int PassThruStartPassBlockMsgFilter(int channelid, int filterType, ref UnsafePassThruMsg maskMsg,
             ref UnsafePassThruMsg patternMsg, int nada, ref int filterId)
         {
             return 0;
         }
 
-        [DllExport("PassThruStopMsgFilter", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruStopMsgFilter")]
         public static J2534Err PassThruStopMsgFilter(int channelId, int filterId)
         {
             Writer.Write("PassThruStopMsgFilter start");
@@ -138,7 +138,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruSetProgrammingVoltage", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruSetProgrammingVoltage")]
         public static J2534Err PassThruSetProgrammingVoltage(int deviceId, int pinNumber, int voltage)
         {
             Writer.Write("PassThruSetProgrammingVoltage start");
@@ -149,7 +149,7 @@ namespace J2534DotNet.Logger
             return result;
         }
 
-        [DllExport("PassThruReadVersion", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruReadVersion")]
         public static J2534Err PassThruReadVersion(
             int deviceId, IntPtr firmwareVersion, IntPtr dllVersion, IntPtr apiVersion)
         {
@@ -161,28 +161,36 @@ namespace J2534DotNet.Logger
 
             var result = Loader.Lib.ReadVersion(deviceId, ref strFirmwareVersion, ref strDllVersion, ref strAPIVersion);
 
-            Marshal.StructureToPtr(strFirmwareVersion, firmwareVersion, false);
-            Marshal.StructureToPtr(strDllVersion, dllVersion, false);
-            Marshal.StructureToPtr(strAPIVersion, apiVersion, false);
+            var ptr = Marshal.StringToHGlobalUni(strFirmwareVersion);
+            CopyMemory(firmwareVersion, ptr, 200);
 
-            Writer.Write("PassThruReadVersion result " + result);
+            ptr = Marshal.StringToHGlobalUni(strDllVersion);
+            CopyMemory(dllVersion, ptr, 200);
+                
+            ptr = Marshal.StringToHGlobalUni(strAPIVersion);
+            CopyMemory(apiVersion, ptr, 200);
+
+            Writer.Write("PassThruReadVersion result {0}, firmwareVersion: {1}, dllVersion: {2}, apiVersion: {3}",
+                result, strFirmwareVersion, strDllVersion, strAPIVersion);
             return result;
         }
 
-        [DllExport("PassThruGetLastError", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruGetLastError")]
         public static J2534Err PassThruGetLastError(IntPtr errorDescription)
         {
             Writer.Write("PassThruGetLastError start");
 
             string strError = string.Empty;
             var result = Loader.Lib.GetLastError(ref strError);
-            Marshal.StructureToPtr(strError, errorDescription, false);
 
-            Writer.Write("PassThruGetLastError result " + result);
+            var error = Marshal.StringToHGlobalUni(strError);
+            CopyMemory(errorDescription, error, 200);
+
+            Writer.Write("PassThruGetLastError result: {0}, error text: {1}", result, strError);
             return result;
         }
 
-        [DllExport("PassThruIoctl", CallingConvention = CallingConvention.Cdecl)]
+        [DllExport("PassThruIoctl")]
         public static int PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output)
         {
             Writer.Write("PassThruIoctl start");
@@ -192,5 +200,9 @@ namespace J2534DotNet.Logger
             Writer.Write("PassThruIoctl result " + result);
             return (int) result;
         }
+
+
+        [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+        public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
     }
 }

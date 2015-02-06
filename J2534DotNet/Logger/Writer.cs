@@ -33,5 +33,14 @@ namespace J2534DotNet.Logger
                 stream.Flush();
             }
         }
+
+        public static void Write(string format, params object[] args)
+        {
+            using (var stream = new StreamWriter(fileName, true))
+            {
+                stream.WriteLine("{0} {1}", DateTime.Now, string.Format(format, args));
+                stream.Flush();
+            }
+        }
     }
 }
