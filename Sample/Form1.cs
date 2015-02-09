@@ -83,7 +83,7 @@ namespace Sample
          */
         private void SendReceiveNoErrorChecking(object sender, EventArgs e)
         {
-            J2534 passThru = new J2534();
+            J2534Extended passThru = new J2534Extended();
 
             // Find all of the installed J2534 passthru devices
             List<J2534Device> availableJ2534Devices = J2534Detect.ListDevices();
@@ -94,11 +94,11 @@ namespace Sample
 
             // Attempt to open a communication link with the pass thru device
             int deviceId = 0;
-            passThru.Open(ref deviceId);
+            passThru.PassThruOpen(IntPtr.Zero, ref deviceId);
 
             // Open a new channel configured for ISO15765 (CAN)
             int channelId = 0;
-            passThru.Connect(deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref channelId);
+            passThru.PassThruConnect(deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref channelId);
 
             // Set up a message filter to watch for response messages
             int filterId = 0;
@@ -114,7 +114,7 @@ namespace Sample
                 ProtocolID.ISO15765,
                 TxFlag.ISO15765_FRAME_PAD,
                 new byte[] { 0x00, 0x00, 0x07, 0xE0});
-            passThru.StartMsgFilter(channelId, FilterType.FLOW_CONTROL_FILTER, ref maskMsg, ref patternMsg, ref flowControlMsg, ref filterId);
+            //passThru.StartMsgFilter(channelId, FilterType.FLOW_CONTROL_FILTER, ref maskMsg, ref patternMsg, ref flowControlMsg, ref filterId);
 
             // Clear out the response buffer so we know we're getting the freshest possible data
             passThru.ClearRxBuffer(channelId);
@@ -125,7 +125,7 @@ namespace Sample
                 TxFlag.ISO15765_FRAME_PAD,
                 new byte[] { 0x00, 0x00, 0x07, 0xdf, 0x01, 0x00 });
             int numMsgs = 1;
-            passThru.WriteMsgs(channelId, ref txMsg, ref numMsgs, 50);
+            //passThru.WriteMsgs(channelId, ref txMsg, ref numMsgs, 50);
 
             // Read messages in a loop until we either timeout or we receive data
             List<PassThruMsg> rxMsgs = new List<PassThruMsg>();
@@ -149,7 +149,7 @@ namespace Sample
             //
 
             // Disconnect this channel
-            passThru.Disconnect(channelId);
+            passThru.PassThruDisconnect(channelId);
 
             // When we are done with the device, we can free the library.
             passThru.FreeLibrary();
@@ -162,7 +162,7 @@ namespace Sample
          */
         private void CmdReadVoltageClick(object sender, EventArgs e)
         {
-            J2534 passThru = Loader.Lib;
+            J2534Extended passThru = null;// = Loader.Lib;
             double voltage = 0;
 
             // Find all of the installed J2534 passthru devices
@@ -195,7 +195,7 @@ namespace Sample
 
         private void CmdReadVinClick(object sender, EventArgs e)
         {
-            J2534 passThru = new J2534();
+            J2534Extended passThru = new J2534Extended();
             string vin = "";
 
             // Find all of the installed J2534 passthru devices

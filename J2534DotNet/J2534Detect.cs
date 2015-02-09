@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Michael Kelly
+﻿#region License
 /* 
  * Copyright (c) 2010, Michael Kelly
  * michael.e.kelly@gmail.com

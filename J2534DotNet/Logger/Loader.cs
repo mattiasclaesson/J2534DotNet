@@ -16,13 +16,13 @@ namespace J2534DotNet.Logger
             var sd = new SelectDevice();
             if (sd.ShowDialog() == DialogResult.OK)
             {
-                j2534library = new J2534();
+                j2534library = new J2534Extended();
                 j2534library.LoadLibrary(sd.Device);
             }
         }
 
-        public static J2534 Lib { get { return instance.j2534library; } }
+        public static IJ2534 Lib { get { return instance.j2534library; } }
         
-        private J2534 j2534library;
+        private J2534Extended j2534library;
     }
 }

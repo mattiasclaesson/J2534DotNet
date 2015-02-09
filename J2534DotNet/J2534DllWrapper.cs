@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Michael Kelly
+﻿#region License
 /* 
  * Copyright (c) 2010, Michael Kelly
  * michael.e.kelly@gmail.com
@@ -41,12 +41,12 @@ namespace J2534DotNet
         public static extern bool FreeLibrary(IntPtr hModule);
     }
 
-    internal class J2534DllWrapper
+    public class J2534DllWrapper
     {
         private IntPtr m_pDll;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int PassThruOpen(int nada, ref int deviceId);
+        public delegate int PassThruOpen(IntPtr name, ref int deviceId);
 
         public PassThruOpen Open;
 
@@ -69,18 +69,18 @@ namespace J2534DotNet
         public delegate int PassThruReadMsgs(int channelId, IntPtr pMsgs, ref int numMsgs, int timeout);
 
         public PassThruReadMsgs ReadMsgs;
-        
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout);
 
         public PassThruWriteMsgs WriteMsgs;
-       
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruStartPeriodicMsg(
             int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval);
 
         public PassThruStartPeriodicMsg StartPeriodicMsg;
-        
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruStopPeriodicMsg(int channelId, int msgId);
 
@@ -121,13 +121,13 @@ namespace J2534DotNet
         public delegate int PassThruSetProgrammingVoltage(int deviceId, int pinNumber, int voltage);
 
         public PassThruSetProgrammingVoltage SetProgrammingVoltage;
- 
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruReadVersion(
             int deviceId, IntPtr firmwareVersion, IntPtr dllVersion, IntPtr apiVersion);
 
         public PassThruReadVersion ReadVersion;
- 
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruGetLastError(IntPtr errorDescription);
 
@@ -137,7 +137,7 @@ namespace J2534DotNet
         public delegate int PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output);
 
         public PassThruIoctl Ioctl;
-   
+
         public bool LoadJ2534Library(string path)
         {
             m_pDll = NativeMethods.LoadLibrary(path);
@@ -199,7 +199,7 @@ namespace J2534DotNet
                     pAddressOfFunctionToCall,
                     typeof (PassThruStartMsgFilter));
 
-#warning This address may not be correct
+            #warning This address may not be correct
             pAddressOfFunctionToCall = NativeMethods.GetProcAddress(m_pDll, "PassThruStartMsgFilter");
             if (pAddressOfFunctionToCall != IntPtr.Zero)
                 StartPassBlockMsgFilter = (PassThruStartPassBlockMsgFilter) Marshal.GetDelegateForFunctionPointer(

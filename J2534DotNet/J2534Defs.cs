@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010, Michael Kelly
+﻿#region License
 /* 
  * Copyright (c) 2010, Michael Kelly
  * michael.e.kelly@gmail.com
@@ -41,8 +41,8 @@ namespace J2534DotNet
 		public ProtocolID ProtocolID {get; set;}
         public RxStatus RxStatus { get; set; }
         public TxFlag TxFlags { get; set; }
-        public int Timestamp { get; set; }
-        public int ExtraDataIndex { get; set; }
+        public uint Timestamp { get; set; }
+        public uint ExtraDataIndex { get; set; }
         public byte[] Data { get; set; }
     }
 

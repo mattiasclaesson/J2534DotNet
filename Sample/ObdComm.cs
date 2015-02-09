@@ -160,7 +160,7 @@ namespace Sample
             //  ProtocolID.J1850PWM;  // J1850PWM
             //  ProtocolID.J1850VPW;  // J1850VPW
             m_deviceId = 0;
-            m_status = m_j2534Interface.Open(ref m_deviceId);
+            m_status = m_j2534Interface.PassThruOpen(ref m_deviceId);
             if (m_status != J2534Err.STATUS_NOERROR)
                 return false;
             if (ConnectIso15765())
@@ -175,7 +175,7 @@ namespace Sample
         {
             List<byte> value = new List<byte>();
 
-            m_status = m_j2534Interface.Connect(m_deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref m_channelId);
+            m_status = m_j2534Interface.PassThruConnect(m_deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref m_channelId);
             if (J2534Err.STATUS_NOERROR != m_status)
             {
                 return false;
@@ -205,14 +205,14 @@ namespace Sample
                 m_status = m_j2534Interface.StartMsgFilter(m_channelId, FilterType.FLOW_CONTROL_FILTER, ref maskMsg, ref patternMsg, ref flowControlMsg, ref filterId);
                 if (J2534Err.STATUS_NOERROR != m_status)
                 {
-                    m_j2534Interface.Disconnect(m_channelId);
+                    m_j2534Interface.PassThruDisconnect(m_channelId);
                     return false;
                 }
 	        }
             
             if(!ReadObdPid(0x01,0x00,ProtocolID.ISO15765, ref value))
             {
-                m_j2534Interface.Disconnect(m_channelId);
+                m_j2534Interface.PassThruDisconnect(m_channelId);
 		        return false;
 	        }
 	        return true;
@@ -220,7 +220,7 @@ namespace Sample
 
         public bool Disconnect()
         {
-            m_status = m_j2534Interface.Close(m_deviceId);
+            m_status = m_j2534Interface.PassThruClose(m_deviceId);
             if (m_status != J2534Err.STATUS_NOERROR)
             {
                 return false;

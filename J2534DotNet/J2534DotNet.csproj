@@ -80,9 +80,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IJ2534Extended.cs" />
+    <Compile Include="J2534Extended.cs" />
+    <Compile Include="J2534.cs" />
     <Compile Include="J2534Detect.cs" />
     <Compile Include="IJ2534.cs" />
-    <Compile Include="J2534.cs" />
     <Compile Include="J2534Defs.cs" />
     <Compile Include="J2534Device.cs" />
     <Compile Include="J2534DllWrapper.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Logger\Writer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnsafePassThruMsg.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

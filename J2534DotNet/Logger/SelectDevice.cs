@@ -23,6 +23,13 @@ namespace J2534DotNet.Logger
         private void SelectDevice_Load(object sender, EventArgs e)
         {
             var devices = J2534Detect.ListDevices().Where(d => d.FunctionLibrary != Assembly.GetExecutingAssembly().Location).ToList();
+            if (devices.Count == 1)
+            {
+                Device = devices.Single();
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+
             deviceList.DataSource = devices;
             deviceList.DisplayMember = "Name";
         }
