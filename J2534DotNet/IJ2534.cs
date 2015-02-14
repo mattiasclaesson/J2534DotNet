@@ -45,7 +45,7 @@ namespace J2534DotNet
 
         J2534Err PassThruDisconnect(int channelId);
         J2534Err PassThruReadMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout);
-        J2534Err PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout);
+        J2534Err PassThruWriteMsgs(int channelId, IntPtr msg, ref int numMsgs, int timeout);
         J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval);
         J2534Err PassThruStopPeriodicMsg(int channelId, int msgId);
 

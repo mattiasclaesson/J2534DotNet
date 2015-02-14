@@ -71,9 +71,9 @@ namespace J2534DotNet
             return (J2534Err) m_wrapper.ReadMsgs(channelId, msgs, ref numMsgs, timeout);
         }
 
-        public J2534Err PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout)
+        public J2534Err PassThruWriteMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)
         {
-            return (J2534Err)m_wrapper.WriteMsgs(channelId, ref msg, ref numMsgs, timeout);
+            return (J2534Err)m_wrapper.WriteMsgs(channelId, msgs, ref numMsgs, timeout);
         }
 
         public J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval)

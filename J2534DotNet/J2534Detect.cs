@@ -25,6 +25,7 @@
  */
 #endregion License
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.Win32;
 
 namespace J2534DotNet
@@ -34,9 +35,16 @@ namespace J2534DotNet
         private const string PASSTHRU_REGISTRY_PATH = "Software\\PassThruSupport.04.04";
         private const string PASSTHRU_REGISTRY_PATH_6432 = "Software\\Wow6432Node\\PassThruSupport.04.04";
 
+        private static List<J2534Device> j2534Devices;
+
         static public List<J2534Device> ListDevices()
         {
-            List<J2534Device> j2534Devices = new List<J2534Device>();
+            if (j2534Devices != null)
+            {
+                return j2534Devices;
+            }
+
+            j2534Devices = new List<J2534Device>();
             RegistryKey myKey = Registry.LocalMachine.OpenSubKey(PASSTHRU_REGISTRY_PATH, false);
             if (myKey == null)
             {
@@ -66,6 +74,8 @@ namespace J2534DotNet
                 tempDevice.SCI_A_TRANSChannels = (int)deviceKey.GetValue("SCI_A_TRANS", 0);
                 tempDevice.SCI_B_ENGINEChannels = (int)deviceKey.GetValue("SCI_B_ENGINE", 0);
                 tempDevice.SCI_B_TRANSChannels = (int)deviceKey.GetValue("SCI_B_TRANS", 0);
+                
+                if (tempDevice.FunctionLibrary == Assembly.GetExecutingAssembly().Location) continue;
 
                 j2534Devices.Add(tempDevice);
             }

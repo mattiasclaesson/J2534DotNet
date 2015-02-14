@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using RGiesecke.DllExport;
 
 namespace J2534DotNet.Logger
@@ -10,88 +8,109 @@ namespace J2534DotNet.Logger
         [DllExport("PassThruOpen")]
         public static J2534Err PassThruOpen(IntPtr name, ref int deviceId)
         {
-            Writer.Write("PassThruOpen start");
+            Log.Write("PassThruOpen(IntPtr name, ref int deviceId)");
+            Log.Write("PassThruOpen({0}, {1})", name.AsString(), deviceId);
 
             var result = Loader.Lib.PassThruOpen(name, ref deviceId);
 
-            Writer.Write("PassThruOpen result " + result);
+            Log.Write("PassThruOpen result: " + result);
+            Log.WriteDelimiter();
+
             return result;
         }
 
         [DllExport("PassThruClose")]
         public static J2534Err PassThruClose(int deviceId)
         {
-            Writer.Write("PassThruClose start");
+            Log.Write("PassThruClose(int deviceId)");
+            Log.Write("PassThruClose({0})", deviceId);
 
             var result = Loader.Lib.PassThruClose(deviceId);
 
-            Writer.Write("PassThruClose result " + result);
+            Log.Write("PassThruClose result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruConnect")]
         public static J2534Err PassThruConnect(int deviceId, ProtocolID protocolId, ConnectFlag flags, BaudRate baudRate, ref int channelId)
         {
-            Writer.Write("PassThruConnect start");
+            Log.Write("PassThruConnect(int deviceId, ProtocolID protocolId, ConnectFlag flags, BaudRate baudRate, ref int channelId)");
+            Log.Write("PassThruConnect({0}, {1}, {2}, {3}, {4})", deviceId, protocolId, flags, baudRate, channelId);
 
             var result = Loader.Lib.PassThruConnect(deviceId, protocolId, flags, baudRate, ref channelId);
 
-            Writer.Write("PassThruConnect result " + result);
+            Log.Write("PassThruConnect result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruDisconnect")]
         public static J2534Err PassThruDisconnect(int channelId)
         {
-            Writer.Write("PassThruDisconnect start");
+            Log.Write("PassThruDisconnect(int channelId)");
+            Log.Write("PassThruDisconnect({0})", channelId);
 
             var result = Loader.Lib.PassThruDisconnect(channelId);
 
-            Writer.Write("PassThruDisconnect result " + result);
+            Log.Write("PassThruDisconnect result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruReadMsgs")]
         public static J2534Err PassThruReadMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)
         {
-            Writer.Write("PassThruReadMsgs start");
+            Log.Write("PassThruReadMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)");
+            Log.Write("PassThruReadMsgs({0}, {1}, {2}, {3})", channelId, msgs, numMsgs, timeout);
 
             var result = Loader.Lib.PassThruReadMsgs(channelId, msgs, ref numMsgs, timeout);
 
-            Writer.Write("PassThruReadMsgs result " + result);
+            Log.Write("PassThruReadMsgs result: " + result);
+            Log.Write(msgs.AsMsgList(numMsgs).AsString());
+            Log.Write("PassThruReadMsgs end");
+
             return result;
         }
 
         [DllExport("PassThruWriteMsgs")]
-        public static J2534Err PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout)
+        public static J2534Err PassThruWriteMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)
         {
-            Writer.Write("PassThruWriteMsgs start");
-            
-            var result = Loader.Lib.PassThruWriteMsgs(channelId, ref msg, ref numMsgs, timeout);
-            
-            Writer.Write("PassThruWriteMsgs result " + result);
+            Log.Write("PassThruWriteMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)");
+            Log.Write("PassThruWriteMsgs({0}, {1}, {2}, {3})", channelId, msgs, numMsgs, timeout);
+            Log.Write(msgs.AsMsgList(numMsgs).AsString());
+
+            var result = Loader.Lib.PassThruWriteMsgs(channelId, msgs, ref numMsgs, timeout);
+
+            Log.Write("PassThruWriteMsgs result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruStartPeriodicMsg")]
         public static J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval)
         {
-            Writer.Write("PassThruStartPeriodicMsg start");
-            
+            Log.Write("PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval)");
+            Log.Write("PassThruStartPeriodicMsg({0}, {1}, {2}, {3})", channelId, msg, msgId, timeInterval);
+            Log.Write(msg.ConvertPassThruMsg().ToString());
+
             var result = Loader.Lib.PassThruStartPeriodicMsg(channelId, ref msg, ref msgId, timeInterval);
-            
-            Writer.Write("PassThruStartPeriodicMsg result " + result);
+
+            Log.Write("PassThruStartPeriodicMsg result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruStopPeriodicMsg")]
         public static J2534Err PassThruStopPeriodicMsg(int channelId, int msgId)
         {
-            Writer.Write("PassThruStopPeriodicMsg start");
+            Log.Write("PassThruStopPeriodicMsg(int channelId, int msgId)");
+            Log.Write("PassThruStopPeriodicMsg({0}, {1})", channelId, msgId);
 
             var result = Loader.Lib.PassThruStopPeriodicMsg(channelId, msgId);
 
-            Writer.Write("PassThruStopPeriodicMsg result " + result);
+            Log.Write("PassThruStopPeriodicMsg result: " + result);
+
             return result;
         }
 
@@ -99,34 +118,45 @@ namespace J2534DotNet.Logger
         public static J2534Err PassThruStartMsgFilter(int channelid, int filterType, ref UnsafePassThruMsg maskMsg,
             ref UnsafePassThruMsg patternMsg, ref UnsafePassThruMsg flowControlMsg, ref int filterId)
         {
-            Writer.Write("PassThruStartMsgFilter start");
+            Log.Write("PassThruStartMsgFilter(int channelid, int filterType, ref UnsafePassThruMsg maskMsg, " +
+                      "ref UnsafePassThruMsg patternMsg, ref UnsafePassThruMsg flowControlMsg, ref int filterId)");
+            Log.Write("PassThruStartMsgFilter({0}, {1}, {2}, {3}, {4}, {5})", channelid, filterType, maskMsg, patternMsg,
+                flowControlMsg, filterId);
+            Log.Write("maskMsg: " + Environment.NewLine + maskMsg.ConvertPassThruMsg());
+            Log.Write("patternMsg: " + Environment.NewLine + patternMsg.ConvertPassThruMsg());
+            Log.Write("flowControlMsg: " + Environment.NewLine + flowControlMsg.ConvertPassThruMsg());
 
             var result = Loader.Lib.PassThruStartMsgFilter(channelid, (FilterType)filterType, ref maskMsg,
                 ref patternMsg, ref flowControlMsg, ref filterId);
 
-            Writer.Write("PassThruStartMsgFilter result " + result);
+            Log.Write("PassThruStartMsgFilter result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruStopMsgFilter")]
         public static J2534Err PassThruStopMsgFilter(int channelId, int filterId)
         {
-            Writer.Write("PassThruStopMsgFilter start");
+            Log.Write("PassThruStopMsgFilter(int channelId, int filterId)");
+            Log.Write("PassThruStopMsgFilter({0}, {1})", channelId, filterId);
 
             var result = Loader.Lib.PassThruStopMsgFilter(channelId, filterId);
 
-            Writer.Write("PassThruStopMsgFilter result " + result);
+            Log.Write("PassThruStopMsgFilter result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruSetProgrammingVoltage")]
-        public static J2534Err PassThruSetProgrammingVoltage(int deviceId, int pinNumber, int voltage)
+        public static J2534Err PassThruSetProgrammingVoltage(int deviceId, PinNumber pinNumber, int voltage)
         {
-            Writer.Write("PassThruSetProgrammingVoltage start");
+            Log.Write("PassThruSetProgrammingVoltage(int deviceId, PinNumber pinNumber, int voltage)");
+            Log.Write("PassThruSetProgrammingVoltage({0}, {1}, {2})", deviceId, pinNumber, voltage);
 
-            var result = Loader.Lib.PassThruSetProgrammingVoltage(deviceId, (PinNumber)pinNumber, voltage);
+            var result = Loader.Lib.PassThruSetProgrammingVoltage(deviceId, pinNumber, voltage);
 
-            Writer.Write("PassThruSetProgrammingVoltage result " + result);
+            Log.Write("PassThruSetProgrammingVoltage result: " + result);
+
             return result;
         }
 
@@ -134,36 +164,43 @@ namespace J2534DotNet.Logger
         public static J2534Err PassThruReadVersion(
             int deviceId, IntPtr firmwareVersion, IntPtr dllVersion, IntPtr apiVersion)
         {
-            Writer.Write("PassThruReadVersion start");
+            Log.Write("PassThruReadVersion(int deviceId, IntPtr firmwareVersion, IntPtr dllVersion, IntPtr apiVersion)");
+            Log.Write("PassThruReadVersion({0}, {1}, {2}, {3})", deviceId, firmwareVersion, dllVersion, apiVersion);
 
             var result = Loader.Lib.PassThruReadVersion(deviceId, firmwareVersion, dllVersion, apiVersion);
-            
-            Writer.Write("PassThruReadVersion result {0}, firmwareVersion: {1}, dllVersion: {2}, apiVersion: {3}",
-                result, firmwareVersion.AsString(), dllVersion.AsString(), apiVersion.AsString());
+
+            Log.Write("firmwareVersion:{1}{0}dllVersion{2}{0}apiVersion{3}{0}", firmwareVersion.AsString(),
+                dllVersion.AsString(), apiVersion.AsString());
+            Log.Write("PassThruReadVersion result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruGetLastError")]
         public static J2534Err PassThruGetLastError(IntPtr errorDescription)
         {
-            Writer.Write("PassThruGetLastError start");
+            Log.Write("PassThruGetLastError(IntPtr errorDescription)");
+            Log.Write("PassThruGetLastError({0})", errorDescription);
 
             var result = Loader.Lib.PassThruGetLastError(errorDescription);
 
-            Writer.Write("PassThruGetLastError result: {0}, error text: {1}", result, errorDescription.AsString());
-            
+            Log.Write("Error: " + errorDescription.AsString());
+            Log.Write("PassThruGetLastError result: " + result);
+
             return result;
         }
 
         [DllExport("PassThruIoctl")]
         public static int PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output)
         {
-            Writer.Write("PassThruIoctl start");
+            Log.Write("PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output)");
+            Log.Write("PassThruIoctl({0}, {1}, {2}, {3})", channelId, ioctlID, input, output);
 
             var result = Loader.Lib.PassThruIoctl(channelId, ioctlID, input, output);
 
-            Writer.Write("PassThruIoctl result " + result);
-            return (int) result;
+            Log.Write("PassThruIoctl result: " + result);
+
+            return (int)result;
         }
     }
 }

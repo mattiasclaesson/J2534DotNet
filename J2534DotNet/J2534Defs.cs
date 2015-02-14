@@ -29,23 +29,6 @@ using System.Runtime.InteropServices;
 
 namespace J2534DotNet
 {
-    public class PassThruMsg
-    {
-        public PassThruMsg() { }
-        public PassThruMsg(ProtocolID myProtocolId, TxFlag myTxFlag, byte[] myByteArray)
-        {
-            ProtocolID = myProtocolId;
-            TxFlags = myTxFlag;
-            Data = myByteArray;
-        }
-		public ProtocolID ProtocolID {get; set;}
-        public RxStatus RxStatus { get; set; }
-        public TxFlag TxFlags { get; set; }
-        public uint Timestamp { get; set; }
-        public uint ExtraDataIndex { get; set; }
-        public byte[] Data { get; set; }
-    }
-
     [Flags]
     public enum RxStatus
     {

@@ -66,12 +66,12 @@ namespace J2534DotNet
         public PassThruDisconnect Disconnect;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int PassThruReadMsgs(int channelId, IntPtr pMsgs, ref int numMsgs, int timeout);
+        public delegate int PassThruReadMsgs(int channelId, IntPtr pMessages, ref int numMsgs, int timeout);
 
         public PassThruReadMsgs ReadMsgs;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int PassThruWriteMsgs(int channelId, ref UnsafePassThruMsg msg, ref int numMsgs, int timeout);
+        public delegate int PassThruWriteMsgs(int channelId, IntPtr pMessages, ref int numMsgs, int timeout);
 
         public PassThruWriteMsgs WriteMsgs;
 
