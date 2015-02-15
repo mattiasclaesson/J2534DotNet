@@ -5,7 +5,7 @@ using System.Text;
 
 namespace J2534DotNet
 {
-    public interface IJ2534Extended
+    public interface IJ2534Extended: IJ2534
     {
         J2534Err ReadMsgs(int channelId, ref List<PassThruMsg> msgs, ref int numMsgs, int timeout);
 

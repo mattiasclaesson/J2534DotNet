@@ -14,7 +14,6 @@ namespace J2534DotNet.Logger
             var result = Loader.Lib.PassThruOpen(name, ref deviceId);
 
             Log.Write("PassThruOpen result: " + result);
-            Log.WriteDelimiter();
 
             return result;
         }
@@ -169,7 +168,7 @@ namespace J2534DotNet.Logger
 
             var result = Loader.Lib.PassThruReadVersion(deviceId, firmwareVersion, dllVersion, apiVersion);
 
-            Log.Write("firmwareVersion:{1}{0}dllVersion{2}{0}apiVersion{3}{0}", firmwareVersion.AsString(),
+            Log.Write("firmwareVersion: {1}{0}dllVersion: {2}{0}apiVersion: {3}", Environment.NewLine, firmwareVersion.AsString(),
                 dllVersion.AsString(), apiVersion.AsString());
             Log.Write("PassThruReadVersion result: " + result);
 

@@ -81,7 +81,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logger\Config.cs" />
     <Compile Include="IJ2534Extended.cs" />
     <Compile Include="J2534Extended.cs" />
     <Compile Include="J2534.cs" />
@@ -90,6 +89,9 @@
     <Compile Include="J2534Defs.cs" />
     <Compile Include="J2534Device.cs" />
     <Compile Include="J2534DllWrapper.cs" />
+    <Compile Include="Logger\Config.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Logger\Loader.cs" />
     <Compile Include="Logger\Logger.cs" />
     <Compile Include="Logger\SelectDevice.cs">
