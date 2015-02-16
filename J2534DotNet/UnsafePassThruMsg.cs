@@ -9,10 +9,5 @@
         public uint DataSize;
         public uint ExtraDataIndex;
         public fixed byte Data[4128];
-
-        public override string ToString()
-        {
-            return base.ToString();
-        }
     }
 }

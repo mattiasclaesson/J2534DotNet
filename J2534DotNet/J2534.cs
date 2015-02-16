@@ -76,9 +76,9 @@ namespace J2534DotNet
             return (J2534Err)m_wrapper.WriteMsgs(channelId, msgs, ref numMsgs, timeout);
         }
 
-        public J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval)
+        public J2534Err PassThruStartPeriodicMsg(int channelId, IntPtr msg, ref int msgId, int timeInterval)
         {
-            return (J2534Err)m_wrapper.StartPeriodicMsg(channelId, ref msg, ref msgId, timeInterval);
+            return (J2534Err)m_wrapper.StartPeriodicMsg(channelId, msg, ref msgId, timeInterval);
         }
 
         public J2534Err PassThruStopPeriodicMsg(int channelId, int msgId)
@@ -86,13 +86,13 @@ namespace J2534DotNet
             return (J2534Err)m_wrapper.StopPeriodicMsg(channelId, msgId);
         }
 
-        public J2534Err PassThruStartMsgFilter(int channelid, FilterType filterType, ref UnsafePassThruMsg maskMsg,
-            ref UnsafePassThruMsg patternMsg, ref UnsafePassThruMsg flowControlMsg, ref int filterId)
+        public J2534Err PassThruStartMsgFilter(int channelid, FilterType filterType, IntPtr maskMsg,
+            IntPtr patternMsg, IntPtr flowControlMsg, ref int filterId)
         {
             return
                 (J2534Err)
-                    m_wrapper.StartMsgFilter(channelid, (int) filterType, ref maskMsg, ref patternMsg,
-                        ref flowControlMsg, ref filterId);
+                    m_wrapper.StartMsgFilter(channelid, (int) filterType, maskMsg, patternMsg,
+                        flowControlMsg, ref filterId);
         }
 
         public J2534Err PassThruStopMsgFilter(int channelId, int filterId)

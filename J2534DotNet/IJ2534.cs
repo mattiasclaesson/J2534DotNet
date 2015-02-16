@@ -46,11 +46,11 @@ namespace J2534DotNet
         J2534Err PassThruDisconnect(int channelId);
         J2534Err PassThruReadMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout);
         J2534Err PassThruWriteMsgs(int channelId, IntPtr msg, ref int numMsgs, int timeout);
-        J2534Err PassThruStartPeriodicMsg(int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval);
+        J2534Err PassThruStartPeriodicMsg(int channelId, IntPtr msg, ref int msgId, int timeInterval);
         J2534Err PassThruStopPeriodicMsg(int channelId, int msgId);
 
-        J2534Err PassThruStartMsgFilter(int channelid, FilterType filterType, ref UnsafePassThruMsg maskMsg,
-            ref UnsafePassThruMsg patternMsg, ref UnsafePassThruMsg flowControlMsg, ref int filterId);
+        J2534Err PassThruStartMsgFilter(int channelid, FilterType filterType, IntPtr maskMsg,
+            IntPtr patternMsg, IntPtr flowControlMsg, ref int filterId);
 
         J2534Err PassThruStopMsgFilter(int channelId, int filterId);
         J2534Err PassThruSetProgrammingVoltage(int deviceId, PinNumber pinNumber, int voltage);

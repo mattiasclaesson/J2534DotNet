@@ -1,33 +1,65 @@
 ﻿using System;
-using System.IO;
 
 namespace J2534DotNet.Logger
 {
     public class Log
     {
-        public const string delimiter = "------------------------------------------";
+        private static readonly Log instance = new Log();
+
+        private DateTime startTime = DateTime.Now;
+
+        private Log()
+        {
+        }
+
+        public TimeSpan Timestamp
+        {
+            get { return DateTime.Now - startTime; }
+        }
 
         public static void Write(object val)
         {
-            using (var stream = new StreamWriter(Config.Instance.FileName, true))
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
             {
-                stream.WriteLine("{0} {1}", DateTime.Now, val);
+                stream.WriteLine(val);
+                stream.Flush();
+            }
+        }
+
+        public static void WriteTimestamp(object val)
+        {
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
+            {
+                stream.WriteLine("{0}s {1}", instance.Timestamp.Milliseconds, val);
+                stream.Flush();
+            }
+        }
+
+        public static void WriteTimestamp(string prefix, string format, params object[] args)
+        {
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
+            {
+                stream.WriteLine("{0}{1:##.000}s {2}", prefix, instance.Timestamp.TotalMilliseconds/1000.0, string.Format(format, args));
+                stream.Flush();
+            }
+        }
+
+        public static void WriteTimestamp(string format, params object[] args)
+        {
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
+            {
+                stream.WriteLine("{0}s {1}", instance.Timestamp.Milliseconds, string.Format(format, args));
                 stream.Flush();
             }
         }
 
         public static void Write(string format, params object[] args)
         {
-            using (var stream = new StreamWriter(Config.Instance.FileName, true))
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
             {
-                stream.WriteLine("{0} {1}", DateTime.Now, string.Format(format, args));
+                stream.WriteLine(format, args);
                 stream.Flush();
             }
-        }
-
-        public static void WriteDelimiter()
-        {
-            Write(delimiter + Environment.NewLine + delimiter);
         }
     }
 }

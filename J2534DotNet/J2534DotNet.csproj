@@ -92,8 +92,10 @@
     <Compile Include="Logger\Config.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logger\FormattedStreamWriter.cs" />
     <Compile Include="Logger\Loader.cs" />
     <Compile Include="Logger\Logger.cs" />
+    <Compile Include="Logger\NullFormat.cs" />
     <Compile Include="Logger\SelectDevice.cs">
       <SubType>Form</SubType>
     </Compile>

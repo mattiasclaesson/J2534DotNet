@@ -77,7 +77,7 @@ namespace J2534DotNet
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int PassThruStartPeriodicMsg(
-            int channelId, ref UnsafePassThruMsg msg, ref int msgId, int timeInterval);
+            int channelId, IntPtr msg, ref int msgId, int timeInterval);
 
         public PassThruStartPeriodicMsg StartPeriodicMsg;
 
@@ -91,9 +91,9 @@ namespace J2534DotNet
             (
             int channelid,
             int filterType,
-            ref UnsafePassThruMsg maskMsg,
-            ref UnsafePassThruMsg patternMsg,
-            ref UnsafePassThruMsg flowControlMsg,
+            IntPtr maskMsg,
+            IntPtr patternMsg,
+            IntPtr flowControlMsg,
             ref int filterId
             );
 
