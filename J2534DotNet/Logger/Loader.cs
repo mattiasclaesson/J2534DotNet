@@ -7,7 +7,11 @@ namespace J2534DotNet.Logger
     public class Loader
     {
         private static readonly Loader instance = new Loader();
-        
+
+        private J2534Device j2534Device;
+
+        private J2534Extended j2534library;
+
         private Loader()
         {
             AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
@@ -17,33 +21,35 @@ namespace J2534DotNet.Logger
 
             var list = J2534Detect.ListDevices();
 
-            var device = list.FirstOrDefault(d => d.Name == Config.Instance.DeviceName);
-            if (device != null)
+            j2534Device = list.FirstOrDefault(d => d.Name == Config.Instance.DeviceName);
+            if (j2534Device == null)
             {
-                j2534library.LoadLibrary(device);
-                return;
+                if (list.Count == 1)
+                {
+                    j2534Device = list.Single();
+                }
+                else
+                {
+                    var sd = new SelectDevice();
+                    if (sd.ShowDialog() == DialogResult.OK)
+                    {
+                        j2534Device = sd.Device;
+
+                    }
+                }
             }
 
-            if (list.Count == 1)
-            {
-                j2534library.LoadLibrary(list.Single());
-                return;
-            }
-
-            var sd = new SelectDevice();
-            if (sd.ShowDialog() == DialogResult.OK)
-            {
-                j2534library.LoadLibrary(sd.Device);
-            }
+            j2534library.LoadLibrary(j2534Device);
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.Write("Unhandled exception: {0}", e.ExceptionObject.ToString());
+            Log.WriteLine("Unhandled exception: {0}", e.ExceptionObject.ToString());
         }
 
+        public static J2534Device Device { get { return instance.j2534Device; } }
+
         public static IJ2534 Lib { get { return instance.j2534library; } }
-        
-        private J2534Extended j2534library;
+
     }
 }

@@ -21,7 +21,25 @@ namespace J2534DotNet.Logger
         {
             using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
             {
+                stream.Write(val);
+                stream.Flush();
+            }
+        }
+
+        public static void WriteLine(object val)
+        {
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
+            {
                 stream.WriteLine(val);
+                stream.Flush();
+            }
+        }
+
+        public static void WriteLine(string format, params object[] args)
+        {
+            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
+            {
+                stream.WriteLine(format, args);
                 stream.Flush();
             }
         }
@@ -49,15 +67,6 @@ namespace J2534DotNet.Logger
             using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
             {
                 stream.WriteLine("{0}s {1}", instance.Timestamp.Milliseconds, string.Format(format, args));
-                stream.Flush();
-            }
-        }
-
-        public static void Write(string format, params object[] args)
-        {
-            using (var stream = new FormattedStreamWriter(Config.Instance.FileName, true))
-            {
-                stream.WriteLine(format, args);
                 stream.Flush();
             }
         }

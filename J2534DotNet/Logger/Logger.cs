@@ -8,13 +8,13 @@ namespace J2534DotNet.Logger
         [DllExport("PassThruOpen")]
         public static J2534Err PassThruOpen(IntPtr name, ref int deviceId)
         {
-            Log.Write("------------------------------------------");
-            Log.Write("start log on j2534 at " + DateTime.Now);
-            Log.Write("------------------------------------------");
+            Log.WriteLine("------------------------------------------");
+            Log.WriteLine("start log on {0} at {1}", Loader.Device.Name, DateTime.Now);
+            Log.WriteLine("------------------------------------------");
 
             Log.WriteTimestamp("", "PTOpen({0}, {1})", name.ToString("X8"), deviceId);
 
-            Log.Write("  name: ", name.AsString());
+            Log.WriteLine("  name: ", name.AsString());
 
             var result = Loader.Lib.PassThruOpen(name, ref deviceId);
 
@@ -66,7 +66,7 @@ namespace J2534DotNet.Logger
 
             var result = Loader.Lib.PassThruReadMsgs(channelId, msgs, ref numMsgs, timeout);
 
-            Log.Write(msgs.AsMsgList(numMsgs).AsString());
+            Log.WriteLine(msgs.AsMsgList(numMsgs).AsString());
             Log.WriteTimestamp("  ", "{0}: {1}", (int)result, result);
 
 
@@ -77,7 +77,7 @@ namespace J2534DotNet.Logger
         public static J2534Err PassThruWriteMsgs(int channelId, IntPtr msgs, ref int numMsgs, int timeout)
         {
             Log.WriteTimestamp("", "PTWriteMsgs({0}, 0x{1}, {2}, {3})", channelId, msgs.ToString("X8"), numMsgs, timeout);
-            Log.Write(msgs.AsMsgList(numMsgs).AsString());
+            Log.WriteLine(msgs.AsMsgList(numMsgs).AsString());
 
             var result = Loader.Lib.PassThruWriteMsgs(channelId, msgs, ref numMsgs, timeout);
 
@@ -90,7 +90,7 @@ namespace J2534DotNet.Logger
         public static J2534Err PassThruStartPeriodicMsg(int channelId, IntPtr msg, ref int msgId, int timeInterval)
         {
             Log.WriteTimestamp("", "PTStartPeriodicMsg({0}, 0x{1}, {2}, {3})", channelId, msg.ToString("X8"), msgId, timeInterval);
-            Log.Write(msg.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine(msg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
 
             var result = Loader.Lib.PassThruStartPeriodicMsg(channelId, msg, ref msgId, timeInterval);
 
@@ -123,9 +123,9 @@ namespace J2534DotNet.Logger
                 flowControlMsg.ToString("X8"),
                 filterId);
 
-            Log.Write("  maskMsg: {0}", maskMsg.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
-            Log.Write("  patternMsg: {0}", patternMsg.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
-            Log.Write("  flowControlMsg: {0}", flowControlMsg.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine("  maskMsg: {0}", maskMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine("  patternMsg: {0}", patternMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine("  flowControlMsg: {0}", flowControlMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
 
             var result = Loader.Lib.PassThruStartMsgFilter(channelid, (FilterType)filterType, maskMsg,
                 patternMsg, flowControlMsg, ref filterId);
@@ -171,10 +171,10 @@ namespace J2534DotNet.Logger
 
             var result = Loader.Lib.PassThruReadVersion(deviceId, firmwareVersion, dllVersion, apiVersion);
 
-            Log.Write("  firmwareVersion: " + firmwareVersion.AsString());
-            Log.Write("  dllVersion: " + dllVersion.AsString());
-            Log.Write("  apiVersion: " + apiVersion.AsString());
-            
+            Log.WriteLine("  Firmware: " + firmwareVersion.AsString());
+            Log.WriteLine("  DLL:      " + dllVersion.AsString());
+            Log.WriteLine("  API:      " + apiVersion.AsString());
+
             Log.WriteTimestamp("  ", "{0}: {1}", (int)result, result);
 
             return result;
@@ -185,18 +185,84 @@ namespace J2534DotNet.Logger
         {
             var result = Loader.Lib.PassThruGetLastError(errorDescription);
 
-            Log.Write("  error: " + errorDescription.AsString());
+            Log.WriteLine("  error: " + errorDescription.AsString());
 
             return result;
         }
 
         [DllExport("PassThruIoctl")]
-        public static int PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output)
+        public static int PassThruIoctl(int channelId, Ioctl ioctlID, IntPtr input, IntPtr output)
         {
             Log.WriteTimestamp("", "PTIoctl({0}, {1}, 0x{2}, 0x{3})", channelId, ioctlID, input.ToString("X8"),
                 output.ToString("X8"));
 
-            var result = Loader.Lib.PassThruIoctl(channelId, ioctlID, input, output);
+            if (input == IntPtr.Zero)
+            {
+                Log.WriteLine("  Input is null");
+            }
+            else
+            {
+                Log.Write("  Input: ");
+                switch (ioctlID)
+                {
+                    case Ioctl.SET_CONFIG:
+                        var configList = input.AsStruct<SConfigList>();
+                        if (configList.Count > 0) Log.WriteLine("");
+                        foreach (var config in configList.GetList())
+                        {
+                            Log.WriteLine("  {0} = {1}", config.Parameter, config.Value);
+                        }
+                        break;
+                    case Ioctl.FAST_INIT:
+                        Log.WriteLine(input.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg().ToString());
+                        break;
+                    case Ioctl.FIVE_BAUD_INIT:
+                    case Ioctl.ADD_TO_FUNCT_MSG_LOOKUP_TABLE:
+                    case Ioctl.DELETE_FROM_FUNCT_MSG_LOOKUP_TABLE:
+                        Log.WriteLine(Environment.NewLine + "    " + input.AsStruct<SByteArray>().ToString());
+                        break;
+                    default:
+                        Log.WriteLine("");
+                        break;
+                }
+            }
+
+            var result = Loader.Lib.PassThruIoctl(channelId, (int)ioctlID, input, output);
+
+            if (result == J2534Err.STATUS_NOERROR)
+            {
+                if (output == IntPtr.Zero)
+                {
+                    Log.WriteLine("  Output is null");
+                }
+                else
+                {
+                    Log.Write("  Output:");
+                    switch (ioctlID)
+                    {
+                        case Ioctl.GET_CONFIG:
+                            var configList = input.AsStruct<SConfigList>();
+                            foreach (var config in configList.GetList())
+                            {
+                                Log.WriteLine("    {0} = {1}", config.Parameter, config.Value);
+                            }
+                            break;
+                        case Ioctl.READ_VBATT:
+                        case Ioctl.READ_PROG_VOLTAGE:
+                            Log.WriteLine(" {0:#.000} Volts", output.AsStruct<uint>() / 1000.0);
+                            break;
+                        case Ioctl.FAST_INIT:
+                            Log.WriteLine(output.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg().ToString());
+                            break;
+                        case Ioctl.FIVE_BAUD_INIT:
+                            Log.WriteLine(Environment.NewLine + "    " + input.AsStruct<SByteArray>().ToString());
+                            break;
+                        default:
+                            Log.WriteLine("");
+                            break;
+                    }
+                }
+            }
 
             Log.WriteTimestamp("  ", "{0}: {1}", (int)result, result);
 

@@ -7,8 +7,6 @@ namespace J2534DotNet
 {
     public interface IJ2534Extended: IJ2534
     {
-        J2534Err ReadMsgs(int channelId, ref List<PassThruMsg> msgs, ref int numMsgs, int timeout);
-
         J2534Err GetConfig(int channelId, ref List<SConfig> config);
         J2534Err SetConfig(int channelId, ref List<SConfig> config);
         J2534Err ReadBatteryVoltage(int deviceId, ref int voltage);

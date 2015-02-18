@@ -35,28 +35,6 @@ namespace J2534DotNet
 {
     public class J2534Extended : J2534, IJ2534Extended
     {
-        public J2534Err ReadMsgs(int channelId, ref List<PassThruMsg> msgs, ref int numMsgs, int timeout)
-        {
-            IntPtr pMsg = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnsafePassThruMsg)) * 50);
-            IntPtr pNextMsg = IntPtr.Zero;
-            IntPtr[] pMsgs = new IntPtr[50];
-            J2534Err returnValue = (J2534Err)m_wrapper.ReadMsgs(channelId, pMsg, ref numMsgs, timeout);
-
-            if (returnValue == J2534Err.STATUS_NOERROR)
-            {
-                for (int i = 0; i < numMsgs; i++)
-                {
-                    pNextMsg = (IntPtr)(Marshal.SizeOf(typeof(UnsafePassThruMsg)) * i + (int)pMsg);
-                    UnsafePassThruMsg uMsg = (UnsafePassThruMsg)Marshal.PtrToStructure(pMsg, typeof(UnsafePassThruMsg));
-                    msgs.Add(Utils.ConvertPassThruMsg(uMsg));
-                }
-            }
-
-            Marshal.FreeHGlobal(pMsg);
-
-            return returnValue;
-        }
-
         public J2534Err GetConfig(int channelId, ref List<SConfig> config)
         {
             IntPtr input = IntPtr.Zero;
@@ -188,12 +166,6 @@ namespace J2534DotNet
             // TODO: fix this
             return (J2534Err)m_wrapper.Ioctl(channelId, (int)Ioctl.DELETE_FROM_FUNCT_MSG_LOOKUP_TABLE, input, output);
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct SByteArray
-        {
-            public int NumOfBytes;
-            public fixed byte BytePtr[2];
-        }
+        
     }
 }
