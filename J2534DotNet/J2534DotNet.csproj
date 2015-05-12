@@ -95,8 +95,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SByteArray.cs" />
     <Compile Include="SConfig.cs" />
+    <Compile Include="SConfigList.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UnsafePassThruMsg.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Utils.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
