@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace J2534DotNet.Logger
@@ -20,8 +22,7 @@ namespace J2534DotNet.Logger
 
         private void SelectDevice_Load(object sender, EventArgs e)
         {
-            var devices = J2534Detect.ListDevices();
-            deviceList.DataSource = devices;
+            deviceList.DataSource = J2534Detect.ListDevices();
             deviceList.DisplayMember = "Name";
         }
     }

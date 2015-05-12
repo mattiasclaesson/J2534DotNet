@@ -45,6 +45,7 @@
             // 
             // deviceList
             // 
+            this.deviceList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.deviceList.FormattingEnabled = true;
             this.deviceList.Location = new System.Drawing.Point(5, 9);
             this.deviceList.Name = "deviceList";
@@ -61,7 +62,7 @@
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "SelectDevice";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Select device";
             this.Load += new System.EventHandler(this.SelectDevice_Load);
             this.ResumeLayout(false);
