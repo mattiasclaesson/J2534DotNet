@@ -104,8 +104,8 @@ namespace J2534DotNet
             (
             int channelid,
             int filterType,
-            ref UnsafePassThruMsg uMaskMsg,
-            ref UnsafePassThruMsg uPatternMsg,
+            ref PassThruMsg uMaskMsg,
+            ref PassThruMsg uPatternMsg,
             int nada,
             ref int filterId
             );

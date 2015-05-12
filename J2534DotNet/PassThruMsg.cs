@@ -1,29 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace J2534DotNet
 {
-    public class PassThruMsg
+    public unsafe struct PassThruMsg
     {
-        public PassThruMsg() { }
-        public PassThruMsg(ProtocolID myProtocolId, TxFlag myTxFlag, byte[] myByteArray)
+        public ProtocolID ProtocolID;
+        public RxStatus RxStatus;
+        public TxFlag TxFlags;
+        public uint Timestamp;
+        public uint DataSize;
+        public uint ExtraDataIndex;
+        public fixed byte Data[4128];
+
+        public PassThruMsg(ProtocolID myProtocolId, TxFlag myTxFlag, byte[] myByteArray) : this()
         {
             ProtocolID = myProtocolId;
             TxFlags = myTxFlag;
-            Data = myByteArray;
+
+            fixed (byte* data = Data)
+            {
+                for (int i = 0; i < myByteArray.Length; i++)
+                {
+                    *(data + i) = myByteArray[i];
+                }
+            }
         }
-        public ProtocolID ProtocolID { get; set; }
-        public RxStatus RxStatus { get; set; }
-        public TxFlag TxFlags { get; set; }
-        public uint Timestamp { get; set; }
-        public uint ExtraDataIndex { get; set; }
-        public byte[] Data { get; set; }
 
-        private const string tab = "    ";
+        public byte[] GetBytes()
+        {
+            var bytes = new byte[DataSize];
+            fixed (byte* data = Data)
+            {
+                for (int i = 0; i < DataSize; i++)
+                {
+                    bytes[i] = *(data + i);
+                }
+            }
 
-        public override string ToString()
+            return bytes;
+        }
+
+        //private const string tab = "    ";
+
+        public string ToString(string tab)
         {
             return
                 string.Format(
@@ -32,7 +51,7 @@ namespace J2534DotNet
                     RxStatus,
                     Timestamp,
                     ExtraDataIndex,
-                    BitConverter.ToString(Data),
+                    BitConverter.ToString(GetBytes()),
                     tab,
                     Environment.NewLine);
         }

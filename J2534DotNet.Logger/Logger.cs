@@ -90,7 +90,7 @@ namespace J2534DotNet.Logger
         public static J2534Err PassThruStartPeriodicMsg(int channelId, IntPtr msg, ref int msgId, int timeInterval)
         {
             Log.WriteTimestamp("", "PTStartPeriodicMsg({0}, 0x{1}, {2}, {3})", channelId, msg.ToString("X8"), msgId, timeInterval);
-            Log.WriteLine(msg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine(msg.AsStruct<PassThruMsg>().ToString("\t"));
 
             var result = Loader.Lib.PassThruStartPeriodicMsg(channelId, msg, ref msgId, timeInterval);
 
@@ -123,9 +123,9 @@ namespace J2534DotNet.Logger
                 flowControlMsg.ToString("X8"),
                 filterId);
 
-            Log.WriteLine("  maskMsg: {0}", maskMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
-            Log.WriteLine("  patternMsg: {0}", patternMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
-            Log.WriteLine("  flowControlMsg: {0}", flowControlMsg.AsNullableStruct<UnsafePassThruMsg>().ConvertPassThruMsg());
+            Log.WriteLine("  maskMsg: {0}", maskMsg.AsStruct<PassThruMsg>().ToString("\t"));
+            Log.WriteLine("  patternMsg: {0}", patternMsg.AsStruct<PassThruMsg>().ToString("\t"));
+            Log.WriteLine("  flowControlMsg: {0}", flowControlMsg.AsStruct<PassThruMsg>().ToString("\t"));
 
             var result = Loader.Lib.PassThruStartMsgFilter(channelid, (FilterType)filterType, maskMsg,
                 patternMsg, flowControlMsg, ref filterId);
@@ -214,7 +214,7 @@ namespace J2534DotNet.Logger
                         }
                         break;
                     case Ioctl.FAST_INIT:
-                        Log.WriteLine(input.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg().ToString());
+                        Log.WriteLine(input.AsStruct<PassThruMsg>().ToString("\t"));
                         break;
                     case Ioctl.FIVE_BAUD_INIT:
                     case Ioctl.ADD_TO_FUNCT_MSG_LOOKUP_TABLE:
@@ -252,7 +252,7 @@ namespace J2534DotNet.Logger
                             Log.WriteLine(" {0:#.000} Volts", output.AsStruct<uint>() / 1000.0);
                             break;
                         case Ioctl.FAST_INIT:
-                            Log.WriteLine(output.AsStruct<UnsafePassThruMsg>().ConvertPassThruMsg().ToString());
+                            Log.WriteLine(output.AsStruct<PassThruMsg>().ToString("\t"));
                             break;
                         case Ioctl.FIVE_BAUD_INIT:
                             Log.WriteLine(Environment.NewLine + "    " + input.AsStruct<SByteArray>().ToString());

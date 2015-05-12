@@ -95,19 +95,17 @@ namespace J2534DotNet
         {
             IntPtr input = IntPtr.Zero;
             IntPtr output = IntPtr.Zero;
-            UnsafePassThruMsg uTxMsg = Utils.ConvertPassThruMsg(txMsg);
-            UnsafePassThruMsg uRxMsg = new UnsafePassThruMsg();
+            PassThruMsg uRxMsg = new PassThruMsg();
 
-            Marshal.StructureToPtr(uTxMsg, input, true);
+            Marshal.StructureToPtr(txMsg, input, true);
             Marshal.StructureToPtr(uRxMsg, output, true);
 
             J2534Err returnValue = (J2534Err)m_wrapper.Ioctl(channelId, (int)Ioctl.FAST_INIT, input, output);
             if (returnValue == J2534Err.STATUS_NOERROR)
             {
-                Marshal.PtrToStructure(output, uRxMsg);
+                Marshal.PtrToStructure(output, rxMsg);
             }
 
-            rxMsg = Utils.ConvertPassThruMsg(uRxMsg);
             return returnValue;
         }
 
