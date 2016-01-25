@@ -16,7 +16,12 @@ namespace J2534DotNet
         {
             ProtocolID = myProtocolId;
             TxFlags = myTxFlag;
+            SetBytes(myByteArray);
+        }
 
+        public void SetBytes(byte[] myByteArray)
+        {
+            DataSize = (uint)myByteArray.Length;
             fixed (byte* data = Data)
             {
                 for (int i = 0; i < myByteArray.Length; i++)

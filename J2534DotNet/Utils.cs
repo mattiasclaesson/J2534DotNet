@@ -11,6 +11,13 @@ namespace J2534DotNet
             return Marshal.PtrToStringAnsi(ptr);
         }
 
+        public static IntPtr ToIntPtr(this PassThruMsg msg)
+        {
+            IntPtr msgPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(PassThruMsg)));
+            Marshal.StructureToPtr(msg, msgPtr, true);
+            return msgPtr;
+        }
+
         public static List<PassThruMsg> AsMsgList(this IntPtr ptr, int count)
         {
             List<PassThruMsg> list = new List<PassThruMsg>(count);
