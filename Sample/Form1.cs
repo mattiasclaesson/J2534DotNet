@@ -26,12 +26,16 @@
 #endregion License
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using J2534DotNet;
 
 namespace Sample
 {
+    using System.Runtime.InteropServices;
+
+    using J2534DotNet.Logger;
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -81,22 +85,33 @@ namespace Sample
          */
         private void SendReceiveNoErrorChecking(object sender, EventArgs e)
         {
-            J2534 passThru = new J2534();
+            J2534Extended passThru = new J2534Extended();
 
             // Find all of the installed J2534 passthru devices
             List<J2534Device> availableJ2534Devices = J2534Detect.ListDevices();
 
+            J2534Device j2534Device;
+            var sd = new SelectDevice();
+            if (sd.ShowDialog() == DialogResult.OK)
+            {
+                j2534Device = sd.Device;
+            }
+            else
+            {
+                return;
+            }
+
             // We will always choose the first J2534 device in the list, if there are multiple devices
             //   installed, you should do something more intelligent.
-            passThru.LoadLibrary(availableJ2534Devices[0]);
+            passThru.LoadLibrary(j2534Device);
 
             // Attempt to open a communication link with the pass thru device
             int deviceId = 0;
-            passThru.Open(ref deviceId);
+            passThru.PassThruOpen(IntPtr.Zero, ref deviceId);
 
             // Open a new channel configured for ISO15765 (CAN)
             int channelId = 0;
-            passThru.Connect(deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref channelId);
+            passThru.PassThruConnect(deviceId, ProtocolID.ISO15765, ConnectFlag.NONE, BaudRate.ISO15765, ref channelId);
 
             // Set up a message filter to watch for response messages
             int filterId = 0;
@@ -107,12 +122,16 @@ namespace Sample
             PassThruMsg patternMsg = new PassThruMsg(
                 ProtocolID.ISO15765,
                 TxFlag.ISO15765_FRAME_PAD,
-                new byte[] { 0x00, 0x00, 0x07, 0xE8});
+                new byte[] { 0x00, 0x00, 0x07, 0xE8 });
             PassThruMsg flowControlMsg = new PassThruMsg(
                 ProtocolID.ISO15765,
                 TxFlag.ISO15765_FRAME_PAD,
-                new byte[] { 0x00, 0x00, 0x07, 0xE0});
-            passThru.StartMsgFilter(channelId, FilterType.FLOW_CONTROL_FILTER, ref maskMsg, ref patternMsg, ref flowControlMsg, ref filterId);
+                new byte[] { 0x00, 0x00, 0x07, 0xE0 });
+
+            IntPtr maskMsgPtr = maskMsg.ToIntPtr();
+            IntPtr patternMsgPtr = patternMsg.ToIntPtr();
+            IntPtr flowControlMsgPtr = flowControlMsg.ToIntPtr();
+            passThru.PassThruStartMsgFilter(channelId, FilterType.FLOW_CONTROL_FILTER, maskMsgPtr, patternMsgPtr, flowControlMsgPtr, ref filterId);
 
             // Clear out the response buffer so we know we're getting the freshest possible data
             passThru.ClearRxBuffer(channelId);
@@ -122,32 +141,33 @@ namespace Sample
                 ProtocolID.ISO15765,
                 TxFlag.ISO15765_FRAME_PAD,
                 new byte[] { 0x00, 0x00, 0x07, 0xdf, 0x01, 0x00 });
+            var txMsgPtr = txMsg.ToIntPtr();
             int numMsgs = 1;
-            passThru.WriteMsgs(channelId, ref txMsg, ref numMsgs, 50);
-
+            passThru.PassThruWriteMsgs(channelId, txMsgPtr, ref numMsgs, 50);
+            
             // Read messages in a loop until we either timeout or we receive data
-            List<PassThruMsg> rxMsgs = new List<PassThruMsg>();
-            J2534Err status = J2534Err.STATUS_NOERROR;
             numMsgs = 1;
+            IntPtr rxMsgs = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(PassThruMsg)) * numMsgs);
+            J2534Err status = J2534Err.STATUS_NOERROR;
             while (J2534Err.STATUS_NOERROR == status)
-                status = passThru.ReadMsgs(channelId, ref rxMsgs, ref numMsgs, 200);
+                status = passThru.PassThruReadMsgs(channelId, rxMsgs, ref numMsgs, 200);
 
             // If we received data, we want to extract the data of interest.  I'm removing the reflection of the transmitted message.
-            List<byte> responseData;
-            if ((J2534Err.ERR_BUFFER_EMPTY == status || J2534Err.ERR_TIMEOUT == status) && rxMsgs.Count > 1)
+            if ((J2534Err.ERR_BUFFER_EMPTY == status || J2534Err.ERR_TIMEOUT == status) && numMsgs > 0)
             {
-                responseData = rxMsgs[rxMsgs.Count - 1].Data.ToList();
-                responseData.RemoveRange(0, txMsg.Data.Length);
+                foreach (PassThruMsg msg in rxMsgs.AsList<PassThruMsg>(numMsgs))
+                {
+                    //
+                    //
+                    // Now do something with the data!
+                    //
+                    //
+                }
             }
 
-            //
-            //
-            // Now do something with the data!
-            //
-            //
 
             // Disconnect this channel
-            passThru.Disconnect(channelId);
+            passThru.PassThruDisconnect(channelId);
 
             // When we are done with the device, we can free the library.
             passThru.FreeLibrary();
@@ -160,7 +180,7 @@ namespace Sample
          */
         private void CmdReadVoltageClick(object sender, EventArgs e)
         {
-            J2534 passThru = new J2534();
+            J2534Extended passThru = null;// = Loader.Lib;
             double voltage = 0;
 
             // Find all of the installed J2534 passthru devices
@@ -170,10 +190,6 @@ namespace Sample
                 MessageBox.Show("Could not find any installed J2534 devices.");
                 return;
             }
-
-            // We will always choose the first J2534 device in the list, if there are multiple devices
-            //   installed, you should do something more intelligent.
-            passThru.LoadLibrary(availableJ2534Devices[0]);
 
             ObdComm comm = new ObdComm(passThru);
             if (!comm.DetectProtocol())
@@ -197,7 +213,7 @@ namespace Sample
 
         private void CmdReadVinClick(object sender, EventArgs e)
         {
-            J2534 passThru = new J2534();
+            J2534Extended passThru = new J2534Extended();
             string vin = "";
 
             // Find all of the installed J2534 passthru devices
@@ -230,6 +246,11 @@ namespace Sample
             // When we are done with the device, we can free the library.
             passThru.FreeLibrary();
             txtReadVin.Text = vin;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Assembly.GetExecutingAssembly().Location);
         }
     }
 }
