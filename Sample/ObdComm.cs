@@ -47,7 +47,7 @@ namespace Sample
         {
             m_j2534Interface = j2534Interface;
             m_isConnected = false;
-            m_protocol = ProtocolID.ISO15765;
+            m_protocol = ProtocolID.CAN;
             m_status = J2534Err.STATUS_NOERROR;
         }
 

@@ -180,7 +180,7 @@ namespace Sample
          */
         private void CmdReadVoltageClick(object sender, EventArgs e)
         {
-            J2534Extended passThru = null;// = Loader.Lib;
+            J2534Extended passThru = new J2534Extended();
             double voltage = 0;
 
             // Find all of the installed J2534 passthru devices
@@ -190,6 +190,10 @@ namespace Sample
                 MessageBox.Show("Could not find any installed J2534 devices.");
                 return;
             }
+
+            // We will always choose the first J2534 device in the list, if there are multiple devices
+            //   installed, you should do something more intelligent.
+            passThru.LoadLibrary(availableJ2534Devices[1]);
 
             ObdComm comm = new ObdComm(passThru);
             if (!comm.DetectProtocol())
@@ -226,7 +230,7 @@ namespace Sample
 
             // We will always choose the first J2534 device in the list, if there are multiple devices
             //   installed, you should do something more intelligent.
-            passThru.LoadLibrary(availableJ2534Devices[0]);
+            passThru.LoadLibrary(availableJ2534Devices[1]);
 
             ObdComm comm = new ObdComm(passThru);
             if (!comm.DetectProtocol())
