@@ -45,48 +45,48 @@ namespace J2534DotNet
     {
         private IntPtr m_pDll;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruOpen(IntPtr name, ref int deviceId);
 
         public PassThruOpen Open;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruClose(int deviceId);
 
         public PassThruClose Close;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruConnect(int deviceId, int protocolId, int flags, int baudRate, ref int channelId);
 
         public PassThruConnect Connect;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruDisconnect(int channelId);
 
         public PassThruDisconnect Disconnect;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruReadMsgs(int channelId, IntPtr pMessages, ref int numMsgs, int timeout);
 
         public PassThruReadMsgs ReadMsgs;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruWriteMsgs(int channelId, IntPtr pMessages, ref int numMsgs, int timeout);
 
         public PassThruWriteMsgs WriteMsgs;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruStartPeriodicMsg(
             int channelId, IntPtr msg, ref int msgId, int timeInterval);
 
         public PassThruStartPeriodicMsg StartPeriodicMsg;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruStopPeriodicMsg(int channelId, int msgId);
 
         public PassThruStopPeriodicMsg StopPeriodicMsg;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruStartMsgFilter
             (
             int channelid,
@@ -99,7 +99,7 @@ namespace J2534DotNet
 
         public PassThruStartMsgFilter StartMsgFilter;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruStartPassBlockMsgFilter
             (
             int channelid,
@@ -112,28 +112,28 @@ namespace J2534DotNet
 
         public PassThruStartPassBlockMsgFilter StartPassBlockMsgFilter;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruStopMsgFilter(int channelId, int filterId);
 
         public PassThruStopMsgFilter StopMsgFilter;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruSetProgrammingVoltage(int deviceId, int pinNumber, int voltage);
 
         public PassThruSetProgrammingVoltage SetProgrammingVoltage;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruReadVersion(
             int deviceId, IntPtr firmwareVersion, IntPtr dllVersion, IntPtr apiVersion);
 
         public PassThruReadVersion ReadVersion;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruGetLastError(IntPtr errorDescription);
 
         public PassThruGetLastError GetLastError;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate int PassThruIoctl(int channelId, int ioctlID, IntPtr input, IntPtr output);
 
         public PassThruIoctl Ioctl;
